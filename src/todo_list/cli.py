@@ -33,6 +33,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Filter tasks by status (default: all)",
     )
 
+    search_parser = subparsers.add_parser("search", help="Search tasks by title")
+    search_parser.add_argument("query", help="Text to search for")
+
     complete_parser = subparsers.add_parser("done", help="Mark a task as completed")
     complete_parser.add_argument("task_id", help="Task ID")
 
@@ -63,6 +66,15 @@ def run(args: argparse.Namespace, service: TaskService) -> int:
 
     if args.command == "list":
         tasks = service.list_tasks(args.status)
+        if not tasks:
+            print("No tasks found.")
+            return 0
+        for task in tasks:
+            print(format_task(task))
+        return 0
+
+    if args.command == "search":
+        tasks = service.search_tasks(args.query)
         if not tasks:
             print("No tasks found.")
             return 0
