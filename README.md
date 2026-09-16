@@ -6,6 +6,7 @@ A small persistent command-line to-do list built with Python. It stores tasks in
 
 - Add tasks with input validation
 - List all, pending, or completed tasks
+- Search tasks by title with case-insensitive partial matching
 - Mark tasks as completed
 - Delete tasks
 - Atomic JSON-file writes to reduce the risk of corrupting the task file
@@ -72,6 +73,12 @@ todo list --status pending
 todo list --status completed
 ```
 
+Search tasks by title:
+
+```bash
+todo search "python"
+```
+
 Mark a task complete using its ID:
 
 ```bash
@@ -127,7 +134,7 @@ todo-list/
 │       ├── __init__.py
 │       ├── cli.py
 │       ├── models.py
-│       ├── service.py
+│       └── service.py
 │       └── storage.py
 └── tests/
     ├── test_service.py
@@ -142,7 +149,7 @@ Run the complete test suite with:
 python -m pytest
 ```
 
-The tests cover task creation and validation, completion, deletion, filtering, missing-task errors, corrupt storage, and persistence round trips.
+The tests cover task creation and validation, completion, deletion, filtering, title search, missing-task errors, corrupt storage, and persistence round trips.
 
 ## License
 
