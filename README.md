@@ -134,7 +134,7 @@ todo-list/
 │       ├── __init__.py
 │       ├── cli.py
 │       ├── models.py
-│       └── service.py
+│       ├── service.py
 │       └── storage.py
 └── tests/
     ├── test_service.py
