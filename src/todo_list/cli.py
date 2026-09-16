@@ -4,6 +4,7 @@ import argparse
 import os
 from pathlib import Path
 
+from . import __version__
 from .service import TaskNotFoundError, TaskService
 from .storage import JsonTaskStorage, StorageError
 
@@ -12,6 +13,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="todo",
         description="Manage a persistent command-line to-do list.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the installed version and exit",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
