@@ -24,6 +24,16 @@ class TaskService:
             return tasks
         raise ValueError("Status must be one of: all, pending, completed")
 
+    def search_tasks(self, query: str) -> list[Task]:
+        normalized_query = query.strip().casefold()
+        if not normalized_query:
+            raise ValueError("Search query cannot be empty")
+        return [
+            task
+            for task in self.storage.load()
+            if normalized_query in task.title.casefold()
+        ]
+
     def add_task(self, title: str) -> Task:
         normalized_title = title.strip()
         if not normalized_title:
