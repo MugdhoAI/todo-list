@@ -65,6 +65,24 @@ def test_invalid_status_is_rejected(tmp_path: Path) -> None:
         service.list_tasks("invalid")
 
 
+def test_search_tasks_is_case_insensitive_and_matches_partial_titles(
+    tmp_path: Path,
+) -> None:
+    service = make_service(tmp_path)
+    first = service.add_task("Finish Python project")
+    second = service.add_task("Review Python tests")
+    service.add_task("Buy groceries")
+
+    assert service.search_tasks("PYTHON") == [first, second]
+    assert service.search_tasks("grocer")
+
+
+def test_empty_search_query_is_rejected(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    with pytest.raises(ValueError, match="Search query cannot be empty"):
+        service.search_tasks("   ")
+
+
 def test_corrupt_storage_is_reported(tmp_path: Path) -> None:
     path = tmp_path / "tasks.json"
     path.write_text("not json", encoding="utf-8")
