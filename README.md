@@ -1,12 +1,12 @@
 # To-Do List CLI
 
-A small persistent command-line to-do list built with Python. It stores tasks in a local JSON file, so the list survives between commands without requiring a database or external service.
+A small persistent command line to do list built with Python. It stores tasks in a local JSON file, so the list survives between commands without requiring a database or external service.
 
 ## Features
 
 - Add tasks with input validation
 - List all, pending, or completed tasks
-- Search tasks by title with case-insensitive partial matching
+- Search tasks by title with case insensitive partial matching
 - Mark tasks as completed
 - Delete tasks
 - Atomic JSON-file writes to reduce the risk of corrupting the task file
@@ -17,7 +17,7 @@ A small persistent command-line to-do list built with Python. It stores tasks in
 
 - Python 3.11 or newer
 
-The application has no runtime third-party dependencies.
+The application has no runtime third party dependencies.
 
 ## Setup
 
@@ -118,7 +118,7 @@ The application is split into small layers:
 - `models.py` defines the task data model and serialization rules.
 - `storage.py` owns JSON persistence and atomic file replacement.
 - `service.py` contains task-management rules without CLI concerns.
-- `cli.py` handles command-line parsing, output, and process-level errors.
+- `cli.py` handles command line parsing, output, and process-level errors.
 
 This keeps business behavior testable without invoking the command line and makes the persistence layer replaceable if the project later needs a database.
 
