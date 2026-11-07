@@ -45,6 +45,8 @@ def build_parser() -> argparse.ArgumentParser:
     delete_parser = subparsers.add_parser("delete", help="Delete a task")
     delete_parser.add_argument("task_id", help="Task ID")
 
+    subparsers.add_parser("clear", help="Delete all completed tasks")
+
     return parser
 
 
@@ -98,6 +100,12 @@ def run(args: argparse.Namespace, service: TaskService) -> int:
     if args.command == "delete":
         task = service.delete_task(args.task_id)
         print(f"Deleted: {task.title}")
+        return 0
+
+    if args.command == "clear":
+        removed = service.clear_completed()
+        label = "task" if removed == 1 else "tasks"
+        print(f"Cleared {removed} completed {label}.")
         return 0
 
     raise ValueError(f"Unsupported command: {args.command}")

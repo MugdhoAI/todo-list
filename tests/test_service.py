@@ -76,6 +76,24 @@ def test_delete_missing_task_raises(tmp_path: Path) -> None:
         service.delete_task("missing-id")
 
 
+def test_clear_completed_removes_only_completed_tasks(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    first = service.add_task("Done one")
+    second = service.add_task("Still open")
+    third = service.add_task("Done two")
+    service.complete_task(first.id)
+    service.complete_task(third.id)
+    assert service.clear_completed() == 2
+    assert service.list_tasks() == [second]
+
+
+def test_clear_completed_with_nothing_completed_removes_nothing(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    task = service.add_task("Still open")
+    assert service.clear_completed() == 0
+    assert service.list_tasks() == [task]
+
+
 def test_invalid_status_is_rejected(tmp_path: Path) -> None:
     service = make_service(tmp_path)
     with pytest.raises(ValueError, match="Status must be one of"):

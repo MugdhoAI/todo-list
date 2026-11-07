@@ -68,6 +68,14 @@ class TaskService:
         self.storage.save(tasks)
         return task
 
+    def clear_completed(self) -> int:
+        tasks = self.storage.load()
+        remaining = [task for task in tasks if not task.completed]
+        removed = len(tasks) - len(remaining)
+        if removed:
+            self.storage.save(remaining)
+        return removed
+
     @staticmethod
     def _find(tasks: list[Task], task_id: str) -> Task:
         normalized_id = task_id.strip()
