@@ -45,6 +45,10 @@ def build_parser() -> argparse.ArgumentParser:
     delete_parser = subparsers.add_parser("delete", help="Delete a task")
     delete_parser.add_argument("task_id", help="Task ID")
 
+    edit_parser = subparsers.add_parser("edit", help="Change a task title")
+    edit_parser.add_argument("task_id", help="Task ID")
+    edit_parser.add_argument("title", help="New task title")
+
     subparsers.add_parser("clear", help="Delete all completed tasks")
 
     return parser
@@ -100,6 +104,11 @@ def run(args: argparse.Namespace, service: TaskService) -> int:
     if args.command == "delete":
         task = service.delete_task(args.task_id)
         print(f"Deleted: {task.title}")
+        return 0
+
+    if args.command == "edit":
+        task = service.edit_task(args.task_id, args.title)
+        print(f"Updated: {task.title}")
         return 0
 
     if args.command == "clear":

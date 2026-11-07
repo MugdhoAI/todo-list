@@ -94,6 +94,37 @@ def test_clear_completed_with_nothing_completed_removes_nothing(tmp_path: Path) 
     assert service.list_tasks() == [task]
 
 
+def test_edit_task_changes_title_and_keeps_other_fields(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    task = service.add_task("Old title")
+    edited = service.edit_task(task.id, "  New title  ")
+    assert edited.title == "New title"
+    assert edited.id == task.id
+    assert edited.completed is False
+    assert service.list_tasks() == [edited]
+
+
+def test_edit_task_rejects_empty_title(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    task = service.add_task("Keep me")
+    with pytest.raises(ValueError, match="cannot be empty"):
+        service.edit_task(task.id, "   ")
+    assert service.list_tasks()[0].title == "Keep me"
+
+
+def test_edit_task_rejects_title_over_200_characters(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    task = service.add_task("Keep me")
+    with pytest.raises(ValueError, match="200 characters"):
+        service.edit_task(task.id, "x" * 201)
+
+
+def test_edit_missing_task_raises(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    with pytest.raises(TaskNotFoundError, match="Task not found"):
+        service.edit_task("missing-id", "New title")
+
+
 def test_invalid_status_is_rejected(tmp_path: Path) -> None:
     service = make_service(tmp_path)
     with pytest.raises(ValueError, match="Status must be one of"):

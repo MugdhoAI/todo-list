@@ -35,17 +35,30 @@ class TaskService:
         ]
 
     def add_task(self, title: str) -> Task:
-        normalized_title = title.strip()
-        if not normalized_title:
-            raise ValueError("Task title cannot be empty")
-        if len(normalized_title) > 200:
-            raise ValueError("Task title cannot exceed 200 characters")
+        normalized_title = self._normalize_title(title)
 
         tasks = self.storage.load()
         task = Task.create(str(uuid4()), normalized_title)
         tasks.append(task)
         self.storage.save(tasks)
         return task
+
+    def edit_task(self, task_id: str, title: str) -> Task:
+        normalized_title = self._normalize_title(title)
+        tasks = self.storage.load()
+        task = self._find(tasks, task_id)
+        task.title = normalized_title
+        self.storage.save(tasks)
+        return task
+
+    @staticmethod
+    def _normalize_title(title: str) -> str:
+        normalized_title = title.strip()
+        if not normalized_title:
+            raise ValueError("Task title cannot be empty")
+        if len(normalized_title) > 200:
+            raise ValueError("Task title cannot exceed 200 characters")
+        return normalized_title
 
     def complete_task(self, task_id: str) -> Task:
         tasks = self.storage.load()
