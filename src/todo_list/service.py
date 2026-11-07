@@ -89,6 +89,15 @@ class TaskService:
             self.storage.save(remaining)
         return removed
 
+    def stats(self) -> dict[str, int]:
+        tasks = self.storage.load()
+        completed = sum(1 for task in tasks if task.completed)
+        return {
+            "total": len(tasks),
+            "pending": len(tasks) - completed,
+            "completed": completed,
+        }
+
     @staticmethod
     def _find(tasks: list[Task], task_id: str) -> Task:
         normalized_id = task_id.strip()

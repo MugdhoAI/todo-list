@@ -125,6 +125,17 @@ def test_edit_missing_task_raises(tmp_path: Path) -> None:
         service.edit_task("missing-id", "New title")
 
 
+def test_stats_counts_tasks_by_status(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    assert service.stats() == {"total": 0, "pending": 0, "completed": 0}
+    first = service.add_task("Done one")
+    service.add_task("Still open")
+    second = service.add_task("Done two")
+    service.complete_task(first.id)
+    service.complete_task(second.id)
+    assert service.stats() == {"total": 3, "pending": 1, "completed": 2}
+
+
 def test_invalid_status_is_rejected(tmp_path: Path) -> None:
     service = make_service(tmp_path)
     with pytest.raises(ValueError, match="Status must be one of"):

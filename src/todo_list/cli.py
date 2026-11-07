@@ -51,6 +51,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("clear", help="Delete all completed tasks")
 
+    subparsers.add_parser("stats", help="Show task counts by status")
+
     return parser
 
 
@@ -115,6 +117,13 @@ def run(args: argparse.Namespace, service: TaskService) -> int:
         removed = service.clear_completed()
         label = "task" if removed == 1 else "tasks"
         print(f"Cleared {removed} completed {label}.")
+        return 0
+
+    if args.command == "stats":
+        counts = service.stats()
+        print(f"Total: {counts['total']}")
+        print(f"Pending: {counts['pending']}")
+        print(f"Completed: {counts['completed']}")
         return 0
 
     raise ValueError(f"Unsupported command: {args.command}")
