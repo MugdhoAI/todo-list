@@ -29,7 +29,12 @@ class JsonTaskStorage:
             raise StorageError("Task file must contain a JSON array")
 
         try:
-            return [Task.from_dict(item) for item in raw if isinstance(item, dict)]
+            tasks = []
+            for item in raw:
+                if not isinstance(item, dict):
+                    raise ValueError("Task file contains a non-object entry")
+                tasks.append(Task.from_dict(item))
+            return tasks
         except ValueError as exc:
             raise StorageError("Task file contains invalid task data") from exc
 
