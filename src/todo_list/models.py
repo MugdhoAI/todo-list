@@ -25,6 +25,11 @@ class Task:
             self.completed = True
             self.completed_at = datetime.now(timezone.utc).isoformat()
 
+    def mark_pending(self) -> None:
+        if self.completed:
+            self.completed = False
+            self.completed_at = None
+
     def to_dict(self) -> dict[str, object]:
         return {
             "id": self.id,

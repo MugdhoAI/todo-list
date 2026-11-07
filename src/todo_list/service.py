@@ -54,6 +54,13 @@ class TaskService:
         self.storage.save(tasks)
         return task
 
+    def reopen_task(self, task_id: str) -> Task:
+        tasks = self.storage.load()
+        task = self._find(tasks, task_id)
+        task.mark_pending()
+        self.storage.save(tasks)
+        return task
+
     def delete_task(self, task_id: str) -> Task:
         tasks = self.storage.load()
         task = self._find(tasks, task_id)

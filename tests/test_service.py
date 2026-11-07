@@ -45,6 +45,23 @@ def test_completing_missing_task_raises(tmp_path: Path) -> None:
         service.complete_task("missing-id")
 
 
+def test_reopen_task_marks_completed_task_pending_again(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    task = service.add_task("Ship project")
+    service.complete_task(task.id)
+    reopened = service.reopen_task(task.id)
+    assert reopened.completed is False
+    assert reopened.completed_at is None
+    assert service.list_tasks("pending") == [reopened]
+    assert service.list_tasks("completed") == []
+
+
+def test_reopening_missing_task_raises(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    with pytest.raises(TaskNotFoundError, match="Task not found"):
+        service.reopen_task("missing-id")
+
+
 def test_delete_task_removes_it(tmp_path: Path) -> None:
     service = make_service(tmp_path)
     task = service.add_task("Remove me")
