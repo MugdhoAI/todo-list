@@ -7,8 +7,10 @@ A small persistent command line to do list built with Python. It stores tasks in
 - Add tasks with input validation
 - List all, pending, or completed tasks
 - Search tasks by title with case insensitive partial matching
-- Mark tasks as completed
-- Delete tasks
+- Mark tasks as completed, or reopen them to pending
+- Edit a task title
+- Delete tasks, or clear all completed tasks at once
+- Show task counts by status
 - Atomic JSON-file writes to reduce the risk of corrupting the task file
 - Automated tests for core behavior and failure cases
 - Configurable data-file location through `TODO_LIST_DATA_FILE`
@@ -85,10 +87,34 @@ Mark a task complete using its ID:
 todo done TASK_ID
 ```
 
+Reopen a completed task:
+
+```bash
+todo reopen TASK_ID
+```
+
+Change a task title:
+
+```bash
+todo edit TASK_ID "New title"
+```
+
 Delete a task:
 
 ```bash
 todo delete TASK_ID
+```
+
+Delete all completed tasks:
+
+```bash
+todo clear
+```
+
+Show how many tasks are pending and completed:
+
+```bash
+todo stats
 ```
 
 By default, tasks are stored at `~/.todo-list/tasks.json`. To use another location, set `TODO_LIST_DATA_FILE` before running the command.
@@ -137,6 +163,7 @@ todo-list/
 │       ├── service.py
 │       └── storage.py
 └── tests/
+    ├── test_models.py
     ├── test_service.py
     └── test_storage.py
 ```
@@ -149,7 +176,7 @@ Run the complete test suite with:
 python -m pytest
 ```
 
-The tests cover task creation and validation, completion, deletion, filtering, title search, missing-task errors, corrupt storage, and persistence round trips.
+The tests cover task creation and validation, completion, reopening, editing, deletion, clearing completed tasks, task counts, filtering, title search, missing-task errors, corrupt storage, and persistence round trips.
 
 ## License
 
