@@ -87,6 +87,8 @@ Mark a task complete using its ID:
 todo done TASK_ID
 ```
 
+Wherever a command takes a TASK_ID, a unique prefix of the ID works too, for example the first 8 characters shown by `todo list`. If a prefix matches more than one task, the command reports the ambiguity instead of guessing.
+
 Reopen a completed task:
 
 ```bash
