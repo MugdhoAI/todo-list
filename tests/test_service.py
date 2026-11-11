@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from todo_list.models import Task
 from todo_list.service import TaskNotFoundError, TaskService
 from todo_list.storage import JsonTaskStorage, StorageError
 
@@ -158,6 +159,40 @@ def test_empty_search_query_is_rejected(tmp_path: Path) -> None:
     service = make_service(tmp_path)
     with pytest.raises(ValueError, match="Search query cannot be empty"):
         service.search_tasks("   ")
+
+
+def make_service_with_ids(tmp_path: Path, ids: list[str]) -> TaskService:
+    storage = JsonTaskStorage(tmp_path / "tasks.json")
+    storage.save([Task.create(task_id, f"Task {task_id}") for task_id in ids])
+    return TaskService(storage)
+
+
+def test_unique_id_prefix_resolves_to_the_task(tmp_path: Path) -> None:
+    service = make_service_with_ids(tmp_path, ["abc123-first", "xyz789-second"])
+    completed = service.complete_task("abc1")
+    assert completed.id == "abc123-first"
+    assert completed.completed is True
+
+
+def test_exact_id_wins_over_prefix_matches(tmp_path: Path) -> None:
+    service = make_service_with_ids(tmp_path, ["abc", "abc123-first"])
+    deleted = service.delete_task("abc")
+    assert deleted.id == "abc"
+    assert [task.id for task in service.list_tasks()] == ["abc123-first"]
+
+
+def test_ambiguous_id_prefix_is_rejected(tmp_path: Path) -> None:
+    from todo_list.service import AmbiguousTaskIdError
+
+    service = make_service_with_ids(tmp_path, ["abc123-first", "abc999-second"])
+    with pytest.raises(AmbiguousTaskIdError, match="matches 2 tasks"):
+        service.complete_task("abc")
+
+
+def test_unknown_id_prefix_is_not_found(tmp_path: Path) -> None:
+    service = make_service_with_ids(tmp_path, ["abc123-first"])
+    with pytest.raises(TaskNotFoundError, match="Task not found"):
+        service.complete_task("zzz")
 
 
 def test_corrupt_storage_is_reported(tmp_path: Path) -> None:

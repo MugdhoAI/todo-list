@@ -10,6 +10,10 @@ class TaskNotFoundError(LookupError):
     """Raised when a requested task does not exist."""
 
 
+class AmbiguousTaskIdError(ValueError):
+    """Raised when a task ID prefix matches more than one task."""
+
+
 class TaskService:
     def __init__(self, storage: JsonTaskStorage) -> None:
         self.storage = storage
@@ -106,4 +110,11 @@ class TaskService:
         for task in tasks:
             if task.id == normalized_id:
                 return task
+        matches = [task for task in tasks if task.id.startswith(normalized_id)]
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            raise AmbiguousTaskIdError(
+                f"Task ID prefix matches {len(matches)} tasks: {normalized_id}"
+            )
         raise TaskNotFoundError(f"Task not found: {normalized_id}")
