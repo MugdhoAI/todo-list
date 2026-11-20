@@ -165,6 +165,7 @@ todo-list/
 │       ├── service.py
 │       └── storage.py
 └── tests/
+    ├── test_cli.py
     ├── test_models.py
     ├── test_service.py
     └── test_storage.py
