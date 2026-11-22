@@ -57,6 +57,17 @@ class Task:
             raise ValueError("Task completed must be a boolean")
         if completed_at is not None and not isinstance(completed_at, str):
             raise ValueError("Task completed_at must be a string or null")
+        if not task_id.strip():
+            raise ValueError("Task id cannot be empty")
+        normalized_title = title.strip()
+        if not normalized_title:
+            raise ValueError("Task title cannot be empty")
+        if len(normalized_title) > 200:
+            raise ValueError("Task title cannot exceed 200 characters")
+        if completed and not completed_at:
+            raise ValueError("Completed task must have a completed_at timestamp")
+        if not completed and completed_at is not None:
+            raise ValueError("Pending task cannot have a completed_at timestamp")
 
         return cls(
             id=task_id,

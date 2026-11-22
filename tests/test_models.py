@@ -31,6 +31,68 @@ def test_from_dict_rejects_missing_fields() -> None:
         Task.from_dict({"id": "abc", "title": "Write tests"})
 
 
+def test_from_dict_rejects_empty_id() -> None:
+    with pytest.raises(ValueError, match="id cannot be empty"):
+        Task.from_dict(
+            {
+                "id": "   ",
+                "title": "Write tests",
+                "completed": False,
+                "created_at": "2026-11-08T00:00:00+00:00",
+            }
+        )
+
+
+def test_from_dict_rejects_empty_title() -> None:
+    with pytest.raises(ValueError, match="title cannot be empty"):
+        Task.from_dict(
+            {
+                "id": "abc",
+                "title": "   ",
+                "completed": False,
+                "created_at": "2026-11-08T00:00:00+00:00",
+            }
+        )
+
+
+def test_from_dict_rejects_over_limit_title() -> None:
+    with pytest.raises(ValueError, match="cannot exceed 200 characters"):
+        Task.from_dict(
+            {
+                "id": "abc",
+                "title": "x" * 201,
+                "completed": False,
+                "created_at": "2026-11-08T00:00:00+00:00",
+            }
+        )
+
+
+def test_from_dict_rejects_completed_task_without_timestamp() -> None:
+    with pytest.raises(ValueError, match="must have a completed_at"):
+        Task.from_dict(
+            {
+                "id": "abc",
+                "title": "Write tests",
+                "completed": True,
+                "created_at": "2026-11-08T00:00:00+00:00",
+                "completed_at": None,
+            }
+        )
+
+
+def test_from_dict_rejects_pending_task_with_timestamp() -> None:
+    with pytest.raises(ValueError, match="cannot have a completed_at"):
+        Task.from_dict(
+            {
+                "id": "abc",
+                "title": "Write tests",
+                "completed": False,
+                "created_at": "2026-11-08T00:00:00+00:00",
+                "completed_at": "2026-11-08T01:00:00+00:00",
+            }
+        )
+
+
 def test_from_dict_rejects_wrong_types() -> None:
     with pytest.raises(ValueError, match="must be strings"):
         Task.from_dict(
